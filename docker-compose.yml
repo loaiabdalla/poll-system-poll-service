@@ -1,0 +1,94 @@
+version: '3.8'
+
+services:
+  # MySQL Database for Poll Service
+  poll_db:
+    image: mysql:8.0
+    container_name: poll_system_poll_db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: poll_db
+      MYSQL_USER: poll_admin
+      MYSQL_PASSWORD: poll_password
+    ports:
+      - "3308:3306"
+    volumes:
+      - poll_db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - poll_network
+
+  # Poll Service Application
+  poll_service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: poll_system_poll_service
+    restart: always
+    ports:
+      - "8002:8002"
+    environment:
+      DATABASE_URL: mysql+pymysql://poll_admin:poll_password@poll_db:3306/poll_db
+      USER_SERVICE_URL: http://user_service:8001/api/v1
+      HOST: 0.0.0.0
+      PORT: 8002
+    depends_on:
+      poll_db:
+        condition: service_healthy
+    networks:
+      - poll_network
+
+  # MySQL Database for User Service
+  user_db:
+    image: mysql:8.0
+    container_name: poll_system_user_db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: user_db
+      MYSQL_USER: user_admin
+      MYSQL_PASSWORD: user_password
+    ports:
+      - "3307:3306"
+    volumes:
+      - user_db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - poll_network
+
+  # User Service Application
+  user_service:
+    build:
+      context: ../poll-system-user-service
+      dockerfile: Dockerfile
+    container_name: poll_system_user_service
+    restart: always
+    ports:
+      - "8001:8001"
+    environment:
+      DATABASE_URL: mysql+pymysql://user_admin:user_password@user_db:3306/user_db
+      POLL_SERVICE_URL: http://poll_service:8002/api/v1
+      HOST: 0.0.0.0
+      PORT: 8001
+    depends_on:
+      user_db:
+        condition: service_healthy
+    networks:
+      - poll_network
+
+volumes:
+  poll_db_data:
+  user_db_data:
+
+networks:
+  poll_network:
+    driver: bridge

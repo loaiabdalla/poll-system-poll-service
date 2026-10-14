@@ -1,0 +1,431 @@
+{
+	"info": {
+		"_postman_id": "a5d8b72e-3367-4d92-94ea-6d0b3017a151",
+		"name": "Poll System Microservices API",
+		"description": "Comprehensive Postman test collection for Poll System Backend (User Service & Poll Service).",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "1. User Service",
+			"item": [
+				{
+					"name": "Create User (Step 1 - Unregistered)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"first_name\": \"Alice\",\n  \"last_name\": \"Johnson\",\n  \"email\": \"alice.johnson@example.com\",\n  \"age\": 29,\n  \"address\": \"452 Tech Boulevard, Silicon Valley\",\n  \"joining_date\": \"2026-02-01\"\n}"
+						},
+						"url": {
+							"raw": "{{user_service_url}}/users",
+							"host": [
+								"{{user_service_url}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					}
+				},
+				{
+					"name": "Register User (Step 2 - Dedicated Endpoint)",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"url": {
+							"raw": "{{user_service_url}}/users/1/register",
+							"host": [
+								"{{user_service_url}}"
+							],
+							"path": [
+								"users",
+								"1",
+								"register"
+							]
+						}
+					}
+				},
+				{
+					"name": "Get User By ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{user_service_url}}/users/1",
+							"host": [
+								"{{user_service_url}}"
+							],
+							"path": [
+								"users",
+								"1"
+							]
+						}
+					}
+				},
+				{
+					"name": "List Users",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{user_service_url}}/users?skip=0&limit=50",
+							"host": [
+								"{{user_service_url}}"
+							],
+							"path": [
+								"users"
+							],
+							"query": [
+								{
+									"key": "skip",
+									"value": "0"
+								},
+								{
+									"key": "limit",
+									"value": "50"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Update User",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"address\": \"777 New Address, Innovation City\",\n  \"age\": 30\n}"
+						},
+						"url": {
+							"raw": "{{user_service_url}}/users/1",
+							"host": [
+								"{{user_service_url}}"
+							],
+							"path": [
+								"users",
+								"1"
+							]
+						}
+					}
+				},
+				{
+					"name": "Delete User (Cascades Answers in Poll Service)",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{user_service_url}}/users/1",
+							"host": [
+								"{{user_service_url}}"
+							],
+							"path": [
+								"users",
+								"1"
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "2. Poll Service - Questions",
+			"item": [
+				{
+					"name": "Create Question",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"Between the following, what do you most love to do?\",\n  \"option_1\": \"Watch TV\",\n  \"option_2\": \"Play the computer\",\n  \"option_3\": \"Hanging out with friends\",\n  \"option_4\": \"Travel the world\"\n}"
+						},
+						"url": {
+							"raw": "{{poll_service_url}}/questions",
+							"host": [
+								"{{poll_service_url}}"
+							],
+							"path": [
+								"questions"
+							]
+						}
+					}
+				},
+				{
+					"name": "List Questions",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{poll_service_url}}/questions",
+							"host": [
+								"{{poll_service_url}}"
+							],
+							"path": [
+								"questions"
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Question by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{poll_service_url}}/questions/1",
+							"host": [
+								"{{poll_service_url}}"
+							],
+							"path": [
+								"questions",
+								"1"
+							]
+						}
+					}
+				},
+				{
+					"name": "Update Question (Fails if answered)",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"Updated Question Title?\"\n}"
+						},
+						"url": {
+							"raw": "{{poll_service_url}}/questions/1",
+							"host": [
+								"{{poll_service_url}}"
+							],
+							"path": [
+								"questions",
+								"1"
+							]
+						}
+					}
+				},
+				{
+					"name": "Delete Question (Cascades all answers)",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{poll_service_url}}/questions/1",
+							"host": [
+								"{{poll_service_url}}"
+							],
+							"path": [
+								"questions",
+								"1"
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "3. Poll Service - Answers",
+			"item": [
+				{
+					"name": "Answer Question (Requires Registered User)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"question_id\": 1,\n  \"user_id\": 1,\n  \"selected_option\": 4\n}"
+						},
+						"url": {
+							"raw": "{{poll_service_url}}/answers",
+							"host": [
+								"{{poll_service_url}}"
+							],
+							"path": [
+								"answers"
+							]
+						}
+					}
+				},
+				{
+					"name": "Update Answer by ID",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"selected_option\": 2\n}"
+						},
+						"url": {
+							"raw": "{{poll_service_url}}/answers/1",
+							"host": [
+								"{{poll_service_url}}"
+							],
+							"path": [
+								"answers",
+								"1"
+							]
+						}
+					}
+				},
+				{
+					"name": "Delete Answer by ID",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{poll_service_url}}/answers/1",
+							"host": [
+								"{{poll_service_url}}"
+							],
+							"path": [
+								"answers",
+								"1"
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "4. Poll Service - Statistics & Reporting",
+			"item": [
+				{
+					"name": "1. Question Options Distribution",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{poll_service_url}}/analytics/questions/1/options-count",
+							"host": [
+								"{{poll_service_url}}"
+							],
+							"path": [
+								"analytics",
+								"questions",
+								"1",
+								"options-count"
+							]
+						}
+					}
+				},
+				{
+					"name": "2. Question Total Answers",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{poll_service_url}}/analytics/questions/1/total-answers",
+							"host": [
+								"{{poll_service_url}}"
+							],
+							"path": [
+								"analytics",
+								"questions",
+								"1",
+								"total-answers"
+							]
+						}
+					}
+				},
+				{
+					"name": "3. User Answers to Questions",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{poll_service_url}}/analytics/users/1/answers",
+							"host": [
+								"{{poll_service_url}}"
+							],
+							"path": [
+								"analytics",
+								"users",
+								"1",
+								"answers"
+							]
+						}
+					}
+				},
+				{
+					"name": "4. User Total Answered Count",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{poll_service_url}}/analytics/users/1/total-answers",
+							"host": [
+								"{{poll_service_url}}"
+							],
+							"path": [
+								"analytics",
+								"users",
+								"1",
+								"total-answers"
+							]
+						}
+					}
+				},
+				{
+					"name": "5. Global Summary (All Questions & Options)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{poll_service_url}}/analytics/global-summary",
+							"host": [
+								"{{poll_service_url}}"
+							],
+							"path": [
+								"analytics",
+								"global-summary"
+							]
+						}
+					}
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "user_service_url",
+			"value": "http://localhost:8001/api/v1"
+		},
+		{
+			"key": "poll_service_url",
+			"value": "http://localhost:8002/api/v1"
+		}
+	]
+}
