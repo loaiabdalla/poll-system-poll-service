@@ -29,6 +29,17 @@ def get_db() -> Generator[Session, None, None]:
         db.close()
 
 
-def init_db() -> None:
-    """Create all database tables."""
-    Base.metadata.create_all(bind=engine)
+def init_db(max_retries: int = 10, retry_delay: float = 2.0) -> None:
+    """Create all database tables with retry logic for container environments."""
+    import time
+    for attempt in range(1, max_retries + 1):
+        try:
+            Base.metadata.create_all(bind=engine)
+            print("Poll Service database tables initialized successfully.")
+            return
+        except Exception as exc:
+            if attempt == max_retries:
+                raise exc
+            print(f"Database not ready yet (attempt {attempt}/{max_retries}), retrying in {retry_delay}s...")
+            time.sleep(retry_delay)
+
